@@ -1,6 +1,9 @@
 import * as nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
 import * as isemail from 'isemail';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 interface resp{
   name: string;
@@ -28,7 +31,7 @@ class Emails {
     if (resp.name.length < 5 || resp.name.length > 50) resp.name_error = 'Campo nome, so pode conter de 5 a 50 caracteres.';
     if (!resp.name.match(/^[&a-záàâãéèêíïóôõöúçñ0-9 ]+$/gi)) resp.name_error = 'Digite apenas letras e números.';
     if (!resp.tell) resp.tell_error = 'Campo telefone está vázio!';
-    if (resp.tell.length < 13 || resp.tell.length > 13) resp.tell_error = 'Campo Telefone, so pode conter 13 caracteres.';
+    if (resp.tell.length < 10 || resp.tell.length > 13) resp.tell_error = 'Campo Telefone, so pode conter no máximo 13 caracteres.';
     if (!Number(resp.tell)) resp.tell_error = 'Digite apenas números.';
     if (!resp.email) resp.email_error = 'Campo telefone está vázio!';
     if (isemail.validate(resp.email) === false) resp.email_error = 'E-mail inválido.';
@@ -47,14 +50,14 @@ class Emails {
       port: 587,
       secure: false,
       auth: {
-        user: 'forcawebsuporte@gmail.com',
-        pass: 'zdsqptirmwcxvgng',
+        user: process.env.EMAIL_GMAIL,
+        pass: process.env.PASS_EMAIL_APP,
       },
     });
 
     await transporter.sendMail({
-      from: 'forcawebsuporte@gmail.com',
-      to: 'forcawebsuporte@gmail.com',
+      from: 'no-reply@potiguarsac.com',
+      to: process.env.EMAIL_GMAIL,
       subject: 'Nova solicitação de orçamento - potiguarminerais.com.br',
       text: 'Oçamento em espera.',
       html: `<main><h1>Novo pedido de orçamento</h1><p>Nome da Empresa: ${name}</p><p>Telefone da Empresa: ${tell}</p><p>E-mail da Empresa: ${email}</p></main>`,
